@@ -1,5 +1,6 @@
 #!/user/bin/env node
 
+var fs = require('fs');
 var spawn = require('child_process').spawn;
 
 var mcServer = spawn('python', [], { stdio: ['inherit', 'pipe', 'pipe'] });
@@ -11,6 +12,10 @@ mcServer.on('exit', function onExit() {
 
 mcServer.stdout.pipe(process.stdout);
 mcServer.stderr.pipe(process.stderr);
+
+var logfile = fs.createWriteStream('log.txt');
+mcServer.stdout.pipe(logfile);
+mcServer.stderr.pipe(logfile);
 
 function onMCData(data) {
   // process stuff here
