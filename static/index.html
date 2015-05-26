@@ -4,14 +4,49 @@
 <meta charset="UTF-8">
 <link rel="shortcut icon" href="/favicon.png"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css"/>
+<link rel="stylesheet" href="custom.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="aws-minecraft.js"></script>
 <title>Minecraft Server</title>
 </head>
 <body>
   <div class="container">
     <div class="row">
       <div class="twelve columns">
-        <h1>Our minecraft server</h1>
-        <a class="button button-primary" href="#">Start the Server!</a>
+        <h1>Our Minecraft Server</h1>
+        <hr/>
+      </div>
+    </div>
+    <div class="row">
+      <div class="six columns">
+        <button id="start-button" class="button-primary u-full-width">Start the Server!</button>
+      </div>
+      <div class="six columns">
+        <table class="u-full-width">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Time Online</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>philipjag</td>
+              <td>4:13</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <br/>
+    <div class="row">
+      <div class="twelve columns">
+        <pre id="log">[18:47:57] [Server thread/INFO]: Starting minecraft server 1.8.4
+[18:47:57] [Server thread/INFO]: Loading properties
+[18:47:58] [Server thread/INFO]: Generating keypair
+[18:47:59] [Server thread/INFO]: Preparing level "world"
+[18:48:39] [Server thread/INFO]: Done (40s)! For help, type "help" or "?"</pre>
+        <input id="command" class="u-full-width u-cf" type="text" placeholder="command"/>
       </div>
     </div>
   </div>
