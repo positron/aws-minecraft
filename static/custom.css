@@ -5,3 +5,6 @@
 #log {
    margin-bottom: 0.5em;
 }
+label#server-size-label {
+   display: inline-block;
+}

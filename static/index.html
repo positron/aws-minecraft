@@ -19,7 +19,15 @@
     </div>
     <div class="row">
       <div class="six columns">
-        <button id="start-button" class="button-primary u-full-width">Start the Server!</button>
+          <button id="start-button" class="button-primary u-full-width">Start</button>
+        <div id="server-size-group">
+          <label id="server-size-label" for="server-size">Server Size: </label>
+          <select id="server-size">
+            <option value="t2.micro">Micro (1-2 players)</option>
+            <option value="t2.small" selected>Small (2-4 players)</option>
+            <option value="t2.medium">Medium (4-8 players)</option>
+          </select>
+        </div>
       </div>
       <div class="six columns">
         <table class="u-full-width">
@@ -31,8 +39,12 @@
           </thead>
           <tbody>
             <tr>
+              <td>briandotcom0</td>
+              <td>1:14</td>
+            </tr>
+            <tr>
               <td>philipjag</td>
-              <td>4:13</td>
+              <td>0:13</td>
             </tr>
           </tbody>
         </table>
