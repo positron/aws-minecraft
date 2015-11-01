@@ -7,8 +7,15 @@ So, I hid the secret in a lambda function like this:
 
 ```javascript
 exports.handler = function(event, context) {
-    // TODO check event.password
-    context.succeed("secret")
+    if (event.password == "your_password") {
+        context.succeed({
+            "access_key_id": "your_access_key",
+            "secret_access_key": "your_secret_key"
+        });
+    }
+    else {
+        context.fail("Password is wrong");
+    }
 }
 ```
 
