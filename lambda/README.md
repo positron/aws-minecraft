@@ -17,10 +17,12 @@ Unfortunately, setting up everything required an order of magnitude more time th
 ## Create the lambda function
 Go to Lambda in the AWS Console and follow the prompts to create a node.js function. Obviously we need the bare minimum of resources (1 second timeout, smallest amount of memory available).
 
-You can test your function by hitting the Test button and supplying custom json. The json's keys are available in `context.key`.
+You can test your function by hitting the Test button and supplying custom json. The json's keys are available in `context.key_name`.
 
 ## Setting up API Gateway
-API Gateway costs $3.50/million requests. I hope that doesn't mean they charge me $3.50/mo for a few dozen requests...
+The free tier allows 1M requests a month [indefinitely][free] so you won't be charged $3.50 if you stay below that limit.
+
+[free]: https://aws.amazon.com/free/
 
 * From Lambda, go to the API Endpoints tab
 * Hit the Add API endpoint button.
