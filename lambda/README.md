@@ -43,3 +43,6 @@ The free tier allows 1M requests a month [indefinitely][free] so you won't be ch
 * Expand the Mapping Templates section
 * Add a mapping template with "application/json" as the content type. You need to type this out even though it's the default.
 * I had trouble getting this to save. I ended up hitting the edit icon by "input passthrough" then re-selecting "input passthrough" then hitting the little checkmark then hitting the big "Deploy API" button.
+* Enable CORS by following [these instructions][cors] so any domain can call the API you just created
+
+[cors]: http://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-cors.html
