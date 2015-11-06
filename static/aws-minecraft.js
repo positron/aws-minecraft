@@ -2,8 +2,6 @@
 //       when it is all working I will make a proper state machine UI out of it using promises or some library or something
 
 
-// TODO: stub out UI functionality?
-//window.setTimeout(func, delay);
 
 LAMBDA_URL="https://2u20yskc8i.execute-api.us-east-1.amazonaws.com/prod/fetch_minecraft_secret";
 
@@ -88,5 +86,28 @@ $(function() {
 
    function startServer(creds) {
       START_BUTTON.html("Starting server...");
+
+      AWS.config.region = 'us-east-1';
+      AWS.config.logger = console;
+      AWS.config.update({accessKeyId: creds.access_key_id, secretAccessKey: creds.secret_access_key});
+
+      var ec2 = new AWS.EC2();
+      ec2.modifyInstanceAttribute(
+         {
+            InstanceId: 'i-82a35454',
+            InstanceType: { Value: 't2.micro' }
+         },
+         function(err, data) {
+            if (err) {
+               console.log('ERROR: ' + err.code);
+               console.log('ERROR: ' + err.message);
+            } else {
+               console.log('Instance Type changed');
+               console.log(data);
+               // Now start the server
+               var ec2 = new AWS.EC2();
+            }
+         }
+      );
    }
 });
