@@ -15,3 +15,43 @@ be assigned a new public IP each time you start it.
 
 The script assumes you have run `aws configure` to set up access keys. I
 recommend creating an IAM role that only has permissions to update DNS.
+
+## Website to let your friends turn on the server
+
+### Create a IAM User for the website
+Set up an IAM user with the policy below. That policy will allow that user to
+start instances with the `use=minecraft` tag if they are a `t2` instance. It
+will also allow the user to [modify][ec2-modify] attributes of any instance. Unfortunately
+there is no way to lock this down any further, which is the reason the
+`StartInstances` permission is locked down so tightly.
+
+```javascript
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "ec2:StartInstances",
+            "Resource": [ "arn:aws:ec2:*:700044736775:instance/*" ],
+            "Condition": {
+                "StringEquals": {
+                    "ec2:InstanceType": [ "t2.nano", "t2.micro", "t2.small", "t2.medium", "t2.large" ],
+                    "ec2:ResourceTag/use": "minecraft"
+                }
+            }
+        },
+        {
+            "Effect": "Allow",
+            "Action": "ec2:ModifyInstanceAttribute",
+            "Resource": [ "*" ]
+        }
+    ]
+}
+```
+
+[ec2-modify]: http://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_ModifyInstanceAttribute.html
+
+### Create a lambda function so the website can get the credentials
+Use the [instructions here][lambda] to set up a lambda function that returns the credentials for the user created above.
+
+[lambda]: lambda/README.md
