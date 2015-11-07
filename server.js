@@ -24,6 +24,20 @@ mcServer.stdout.pipe(logfile);
 mcServer.stderr.pipe(logfile);
 process.stdin.pipe(logfile);
 
+// TODO: make it so people in chat can't spoof this
+var join = /(\w+) joined the game/
+var leave = /(\w+) left the game/
+players = {};
+
 function onMCData(data) {
-  // process stuff here
+   data = String(data); // TODO: what type is data?
+   if (match = data.match(join)) {
+      player = match[1];
+      console.log(player + ' joined');
+      players[player] = Date.now();
+   } else if (match = data.match(leave)) {
+      player = match[1];
+      console.log(player + ' left');
+      delete players[player]
+   }
 }
