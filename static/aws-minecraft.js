@@ -103,9 +103,22 @@ $(function() {
                console.log('ERROR: ' + err.message);
             } else {
                console.log('Instance Type changed');
-               console.log(data);
+
                // Now start the server
-               var ec2 = new AWS.EC2();
+               ec2.startInstances(
+                  {
+                     InstanceIds: ['i-82a35454'],
+                     DryRun: true
+                  },
+                  function(err, data) {
+                     if (err) {
+                        console.log('ERROR: ' + err.code);
+                        console.log('ERROR: ' + err.message);
+                     } else {
+                        console.log('Instance Started!');
+                     }
+                  }
+               );
             }
          }
       );
