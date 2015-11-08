@@ -12,7 +12,7 @@ mcServer.stderr.on('data', onMCData);
 process.stdin.on('data', onMCData);
 mcServer.on('exit', function onExit() {
   console.log('Minecraft server exited');
-  spawn('sudo', ['poweroff']);
+  //spawn('sudo', ['poweroff']);
   process.exit(0);
 });
 
@@ -53,4 +53,21 @@ function shutdownIfNoPlayers() {
    }
 }
 
-setInterval(shutdownIfNoPlayers, 2 * 60 * 1000);
+setInterval(shutdownIfNoPlayers, 16 * 60 * 1000);
+
+// Express server
+var express = require('express');
+var app = express();
+
+// Enable CORS
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
+app.get('/api/players', function(req, res) {
+   res.json(players);
+});
+
+app.listen(3000);

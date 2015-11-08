@@ -86,6 +86,7 @@ $(function() {
 
    function startServer(creds) {
       START_BUTTON.html("Starting server...");
+      START_BUTTON.prop('disabled', true);
 
       AWS.config.region = 'us-east-1';
       AWS.config.logger = console;
@@ -111,11 +112,30 @@ $(function() {
                      DryRun: true
                   },
                   function(err, data) {
-                     if (err) {
+                     if (false) {
+                     //if (err) { // TODO debugging with dryrun
                         console.log('ERROR: ' + err.code);
                         console.log('ERROR: ' + err.message);
                      } else {
                         console.log('Instance Started!');
+                        START_BUTTON.html("Server booting...");
+
+                        // Now poll until the node server returns
+                        function pollServer() {
+                           $.ajax({
+                              url: 'http://localhost:3000/api/players/',
+                              type: "GET",
+                              success: function(data) {
+                                 console.log('Successfully pinged node server');
+                                 START_BUTTON.html("Server Online");
+                                 START_BUTTON.addClass('server-online');
+                              },
+                              error: function() {
+                                 setTimeout(pollServer, 1000);
+                              }
+                           });
+                        }
+                        pollServer();
                      }
                   }
                );

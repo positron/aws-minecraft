@@ -8,3 +8,7 @@
 label#server-size-label {
    display: inline-block;
 }
+.server-online:disabled {
+   background-color: #18E55D;
+   border-color: #00AC3A
+}

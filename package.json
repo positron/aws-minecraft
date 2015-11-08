@@ -1,0 +1,29 @@
+{
+  "name": "aws-minecraft",
+  "version": "0.1.0",
+  "description": "Node wrapper around minecraft server",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.13.3",
+    "node": "^5.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/positron/aws-minecraft.git"
+  },
+  "keywords": [
+    "AWS",
+    "minecraft",
+    "EC2"
+  ],
+  "author": "Philip Jagielski",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/positron/aws-minecraft/issues"
+  },
+  "homepage": "https://github.com/positron/aws-minecraft"
+}
