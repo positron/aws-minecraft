@@ -12,6 +12,7 @@ mcServer.stderr.on('data', onMCData);
 process.stdin.on('data', onMCData);
 mcServer.on('exit', function onExit() {
   console.log('Minecraft server exited');
+  spawn('sudo', ['poweroff']);
   process.exit(0);
 });
 
@@ -30,7 +31,7 @@ var leave = /(\w+) left the game/
 players = {};
 
 function onMCData(data) {
-   data = String(data); // TODO: what type is data?
+   data = String(data);
    if (match = data.match(join)) {
       player = match[1];
       console.log(player + ' joined');
@@ -41,3 +42,15 @@ function onMCData(data) {
       delete players[player]
    }
 }
+
+function shutdownIfNoPlayers() {
+   var num_players = Object.keys(players).length;
+   if (num_players == 0) {
+      console.log('Shutting down server');
+      mcServer.stdin.write('/stop\n');
+   } else {
+      console.log(num_players + ' are playing so don\'t shut down');
+   }
+}
+
+setInterval(shutdownIfNoPlayers, 2 * 60 * 1000);
