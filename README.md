@@ -55,3 +55,8 @@ there is no way to lock this down any further, which is the reason the
 Use the [instructions here][lambda] to set up a lambda function that returns the credentials for the user created above.
 
 [lambda]: lambda/README.md
+
+### Node wrapper around minecraft server
+Run this command to allow node to bind to ports < 1024:
+
+    sudo setcap cap_net_bind_service=+ep `readlink -f \`which node\``
