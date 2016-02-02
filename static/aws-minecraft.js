@@ -96,7 +96,7 @@ $(function() {
       ec2.modifyInstanceAttribute(
          {
             InstanceId: 'i-82a35454',
-            InstanceType: { Value: 't2.micro' }
+            InstanceType: { Value: 't2.small' }
          },
          function(err, data) {
             if (err) {
@@ -109,11 +109,11 @@ $(function() {
                ec2.startInstances(
                   {
                      InstanceIds: ['i-82a35454'],
-                     DryRun: true
+                     DryRun: false
                   },
                   function(err, data) {
-                     if (false) {
-                     //if (err) { // TODO debugging with dryrun
+                     //if (false) {
+                     if (err) { // TODO debugging with dryrun
                         console.log('ERROR: ' + err.code);
                         console.log('ERROR: ' + err.message);
                      } else {
@@ -123,7 +123,8 @@ $(function() {
                         // Now poll until the node server returns
                         function pollServer() {
                            $.ajax({
-                              url: 'http://localhost:3000/api/players/',
+                              //url: 'http://localhost:3000/api/players/',
+                              url: 'http://mc.philipjagielski.com/api/players/',
                               type: "GET",
                               success: function(data) {
                                  console.log('Successfully pinged node server');

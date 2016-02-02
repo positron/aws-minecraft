@@ -16,6 +16,9 @@ be assigned a new public IP each time you start it.
 The script assumes you have run `aws configure` to set up access keys. I
 recommend creating an IAM role that only has permissions to update DNS.
 
+## Auto startup
+Copy `minecraft.init.d` to `/etc/init.d/minecraft`.
+
 ## Website to let your friends turn on the server
 
 ### Create a IAM User for the website
