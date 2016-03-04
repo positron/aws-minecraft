@@ -1,0 +1,56 @@
+{
+   "_comment": "
+      A common CentOS build process is to netboot a bare minimum OS and use that as a base to build on. This minimum kernel is booted and runs the 'minecraft.ks' kickstart file. A kickstart file contains answers to all the questions that would normally be asked during a CentOS installation. Our kickstart file is very minimal since we do as much of the system configuration in puppet as we can.
+      Packer automatically starts a http server in this directory that we can access via the special variables .HTTPIP and .HTTPPort. That's how the kickstart file is served. 
+      The amazon-ebs builder logs in to AWS for you and boots up a machine to create the AMI for you. So you have to pay for 1 hour of that instance running (currently a whopping $0.0065 for t2.nano).
+   ",
+   "builders": [{
+      "type": "amazon-ebs",
+      "name": "aws",
+      "access_key": "{{env `aws_access_key`}},
+      "secret_key": "{{env `aws_secret_key`}},
+      "region": "us-east-1",
+      "source_ami": "ami-72b9e018",
+      "instance_type": "t2.nano",
+      "ssh_username": "ubuntu",
+      "ami_name": "aws-minecraft {{timestamp}}"
+   }, {
+      "type": "virtualbox-iso",
+      "name": "vagrant",
+      "guest_os_type": "RedHat_64",
+      "iso_urls": [
+         "http://mirror.clarkson.edu/centos/7/isos/x86_64/CentOS-7-x86_64-NetInstall-1503.iso",
+         "http://mirrors.xmission.com/centos/7/isos/x86_64/CentOS-7-x86_64-NetInstall-1503.iso",
+         "http://ftp.riken.jp/Linux/centos/7/isos/x86_64/CentOS-7-x86_64-NetInstall-1511.iso",
+         "http://repos.mia.quadranet.com/centos/7/isos/x86_64/CentOS-7-x86_64-NetInstall-1503.iso"
+      ],
+      "iso_checksum_type": "sha256",
+      "iso_checksum": "9ed9ffb5d89ab8cca834afce354daa70a21dcb410f58287d6316259ff89758f5",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "shutdown_command": "echo 'vagrant' | sudo /sbin/halt -h -p",
+      "vboxmanage": [
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--memory",
+          "2048"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--cpus",
+          "2"
+        ]
+      ],
+      "disk_size": "8000",
+      "headless": false
+   }],
+   "provisioners": [{
+   }],
+   "post-processors": [{
+      "type": "vagrant",
+      "only": ["virtualbox-iso"],
+      "output": "aws-minecraft.box"
+   }]
+}
