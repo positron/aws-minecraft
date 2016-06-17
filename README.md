@@ -1,13 +1,15 @@
 # AWS Minecraft Utilities
 This repo currently contains utilities to run a minecraft server on EC2. For a
-server that only turns on a few hours a week, this is very cost-effective.
+server that only turns on a few hours a month, this is very cost-effective.
 
 Maybe one day I will make this entirely automatic and configurable. Until then,
 I hope some of these pieces are useful to you.
 
 ## Autoupdate DNS
-Unless you pay extra for a ~~static~~ Elastic IP Address your EC2 server will
-be assigned a new public IP each time you start it.
+Unless you pay extra for a *static* Elastic IP Address your EC2 server will
+be assigned a new public IP each time you start it. Use this script to tell
+Route53 about the new IP every time the server boots so people can join the
+game using DNS.
 
 1. Copy the `update_dns.sh` script to your server.
 2. Run `crontab -e` to edit your cron
@@ -59,7 +61,7 @@ Use the [instructions here][lambda] to set up a lambda function that returns the
 
 [lambda]: lambda/README.md
 
-### Node wrapper around minecraft server
+### Allow node to bind to privileged ports
 Run this command to allow node to bind to ports < 1024:
 
     sudo setcap cap_net_bind_service=+ep `readlink -f \`which node\``
