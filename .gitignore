@@ -4,3 +4,15 @@ static/source_s3_keys.sh
 node_modules/
 npm-debug.log
 log.txt
+
+# TODO: It is best practice to store .tfstate files on S3 because
+#          1. Multiple people could run stuff (there's no locking) and overwrite each other's changes
+#          2. It is a generated output, not source code
+#       But since I'm a team of one it doesn't matter :)
+*.tfstate
+
+# tfstate backups
+*.tfstate.backup
+
+# .zip files to upload to AWS Lambda
+*.zip

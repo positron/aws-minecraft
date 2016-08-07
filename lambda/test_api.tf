@@ -2,6 +2,8 @@ variable "access_key" {}
 
 variable "secret_key" {}
 
+variable "account_id" {}
+
 variable "region" {
   default = "us-east-1"
 }
@@ -15,31 +17,32 @@ provider "aws" {
 resource "aws_iam_role" "terraform_test_role" {
   name = "terraform_test_role"
 
-  # TODO document what this does
+  # TODO: Why can't you see the below json attached to the role in the aws console?
   assume_role_policy = <<EOF
+{
+   "Version": "2012-10-17",
+   "Statement": [
       {
-         "Version": "2012-10-17",
-         "Statement": [
-            {
-               "Sid": "",
-               "Effect": "Allow",
-               "Principal": {
-               "Service": "lambda.amazonaws.com"
-               },
-               "Action": "sts:AssumeRole"
-            }
-         ]
+         "Sid": "",
+         "Effect": "Allow",
+         "Principal": {
+         "Service": "lambda.amazonaws.com"
+         },
+         "Action": "sts:AssumeRole"
       }
+   ]
+}
    EOF
 }
 
 resource "aws_lambda_function" "terraform_test_lambda" {
-  filename      = "hello_world.zip"
-  function_name = "terraform_lambda_hello_world"
-  role          = "${aws_iam_role.terraform_test_role.arn}"
-  handler       = "hello_world.handler"
-  runtime       = "nodejs4.3"
-  timeout       = 1
+  filename         = "hello_world.zip"
+  source_code_hash = "${base64sha256(file("hello_world.zip"))}"
+  function_name    = "terraform_lambda_hello_world"
+  role             = "${aws_iam_role.terraform_test_role.arn}"
+  handler          = "hello_world.handler"
+  runtime          = "nodejs4.3"
+  timeout          = 1
 }
 
 resource "aws_lambda_permission" "allow_api_gateway" {
@@ -47,7 +50,7 @@ resource "aws_lambda_permission" "allow_api_gateway" {
   statement_id  = "AllowExecutionFromApiGateway"
   action        = "lambda:InvokeFunction"
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "arn:aws:execute-api:${var.region}:${var.account_id}:${aws_api_gateway_rest_api.terraform_test_api.id}/*/${aws_api_gateway_integration.test_test-get-integration.integration_http_method}${aws_api_gateway_resource.test_test.path}"
+  source_arn    = "arn:aws:execute-api:${var.region}:${var.account_id}:${aws_api_gateway_rest_api.terraform_test_api.id}/*/${aws_api_gateway_integration.test-post-integration.integration_http_method}${aws_api_gateway_resource.test.path}"
 }
 
 resource "aws_api_gateway_rest_api" "terraform_test_api" {
@@ -61,18 +64,49 @@ resource "aws_api_gateway_resource" "test" {
   path_part   = "test"
 }
 
-resource "aws_api_gateway_method" "test-get" {
+resource "aws_api_gateway_method" "test-post" {
   rest_api_id   = "${aws_api_gateway_rest_api.terraform_test_api.id}"
   resource_id   = "${aws_api_gateway_resource.test.id}"
   http_method   = "POST"
   authorization = "NONE"
 }
 
-resource "aws_api_gateway_integration" "test-get-integration" {
+resource "aws_api_gateway_integration" "test-post-integration" {
   rest_api_id             = "${aws_api_gateway_rest_api.terraform_test_api.id}"
   resource_id             = "${aws_api_gateway_resource.test.id}"
-  http_method             = "${aws_api_gateway_method.test-get.http_method}"
+  http_method             = "${aws_api_gateway_method.test-post.http_method}"
   type                    = "AWS"
   uri                     = "arn:aws:apigateway:${var.region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${var.region}:${var.account_id}:function:${aws_lambda_function.terraform_test_lambda.function_name}/invocations"
-  integration_http_method = "${aws_api_gateway_method.test-get.http_method}"
+  integration_http_method = "${aws_api_gateway_method.test-post.http_method}"
+}
+
+resource "aws_api_gateway_method_response" "200" {
+  rest_api_id = "${aws_api_gateway_rest_api.terraform_test_api.id}"
+  resource_id = "${aws_api_gateway_resource.test.id}"
+  http_method = "${aws_api_gateway_method.test-post.http_method}"
+  status_code = "200"
+
+  response_models = {
+    "application/json" = "Empty"
+  }
+}
+
+resource "aws_api_gateway_integration_response" "test-post-integration-response" {
+  depends_on = ["aws_api_gateway_integration.test-post-integration"]
+
+  rest_api_id = "${aws_api_gateway_rest_api.terraform_test_api.id}"
+  resource_id = "${aws_api_gateway_resource.test.id}"
+  http_method = "${aws_api_gateway_method.test-post.http_method}"
+  status_code = "${aws_api_gateway_method_response.200.status_code}"
+
+  response_templates = {
+    "application/json" = ""
+  }
+}
+
+resource "aws_api_gateway_deployment" "test-post-deployment" {
+  depends_on = ["aws_api_gateway_integration.test-post-integration"]
+
+  rest_api_id = "${aws_api_gateway_rest_api.terraform_test_api.id}"
+  stage_name  = "test"
 }
