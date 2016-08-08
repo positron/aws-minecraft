@@ -80,7 +80,7 @@ resource "aws_api_gateway_integration" "test-post-integration" {
   integration_http_method = "${aws_api_gateway_method.test-post.http_method}"
 }
 
-resource "aws_api_gateway_method_response" "200" {
+resource "aws_api_gateway_method_response" "test-post-response" {
   rest_api_id = "${aws_api_gateway_rest_api.terraform_test_api.id}"
   resource_id = "${aws_api_gateway_resource.test.id}"
   http_method = "${aws_api_gateway_method.test-post.http_method}"
@@ -89,6 +89,12 @@ resource "aws_api_gateway_method_response" "200" {
   response_models = {
     "application/json" = "Empty"
   }
+
+  response_parameters_in_json = <<EOF
+{
+  "method.response.header.Access-Control-Allow-Origin": true
+}
+  EOF
 }
 
 resource "aws_api_gateway_integration_response" "test-post-integration-response" {
@@ -97,16 +103,82 @@ resource "aws_api_gateway_integration_response" "test-post-integration-response"
   rest_api_id = "${aws_api_gateway_rest_api.terraform_test_api.id}"
   resource_id = "${aws_api_gateway_resource.test.id}"
   http_method = "${aws_api_gateway_method.test-post.http_method}"
-  status_code = "${aws_api_gateway_method_response.200.status_code}"
+  status_code = "${aws_api_gateway_method_response.test-post-response.status_code}"
 
   response_templates = {
     "application/json" = ""
   }
+
+  #"method.response.header.Access-Control-Allow-Origin": "'*'"
+  #"method.response.header.X-Some-Header":"integration.response.header.X-Some-Other-Header"
+  response_parameters_in_json = <<EOF
+{
+  "method.response.header.Access-Control-Allow-Origin": "'*'"
+}
+  EOF
 }
 
 resource "aws_api_gateway_deployment" "test-post-deployment" {
-  depends_on = ["aws_api_gateway_integration.test-post-integration"]
+  depends_on = ["aws_api_gateway_integration.test-post-integration", "aws_api_gateway_integration.test-options-integration"]
 
   rest_api_id = "${aws_api_gateway_rest_api.terraform_test_api.id}"
   stage_name  = "test"
+}
+
+# OPTIONS method
+resource "aws_api_gateway_method" "test-options" {
+  rest_api_id   = "${aws_api_gateway_rest_api.terraform_test_api.id}"
+  resource_id   = "${aws_api_gateway_resource.test.id}"
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "test-options-integration" {
+  rest_api_id             = "${aws_api_gateway_rest_api.terraform_test_api.id}"
+  resource_id             = "${aws_api_gateway_resource.test.id}"
+  http_method             = "${aws_api_gateway_method.test-options.http_method}"
+  type                    = "MOCK"
+  integration_http_method = "${aws_api_gateway_method.test-options.http_method}"
+}
+
+resource "aws_api_gateway_method_response" "test-options-response" {
+  rest_api_id = "${aws_api_gateway_rest_api.terraform_test_api.id}"
+  resource_id = "${aws_api_gateway_resource.test.id}"
+  http_method = "${aws_api_gateway_method.test-options.http_method}"
+  status_code = "200"
+
+  response_models = {
+    "application/json" = "Empty"
+  }
+
+  response_parameters_in_json = <<EOF
+{
+  "method.response.header.Access-Control-Allow-Origin": true,
+  "method.response.header.Access-Control-Allow-Methods": true,
+  "method.response.header.Access-Control-Allow-Headers": true
+}
+  EOF
+}
+
+resource "aws_api_gateway_integration_response" "test-options-integration-response" {
+  depends_on = ["aws_api_gateway_integration.test-options-integration"]
+
+  rest_api_id = "${aws_api_gateway_rest_api.terraform_test_api.id}"
+  resource_id = "${aws_api_gateway_resource.test.id}"
+  http_method = "${aws_api_gateway_method.test-options.http_method}"
+  status_code = "${aws_api_gateway_method_response.test-options-response.status_code}"
+
+  response_templates = {
+    "application/json" = ""
+  }
+
+  #"method.response.header.Access-Control-Allow-Origin": "'*'"
+  #"method.response.header.X-Some-Header":"integration.response.header.X-Some-Other-Header"
+  response_parameters_in_json = <<EOF
+{
+  "method.response.header.Access-Control-Allow-Origin": "'*'",
+  "method.response.header.Access-Control-Allow-Methods": "'POST'",
+  "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization'"
+}
+  EOF
 }
