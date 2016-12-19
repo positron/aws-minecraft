@@ -1,3 +1,9 @@
+# Lambda
+TODO: InstanceInitiatedShutdownBehavior = terminate 
+
+
+# OLD README BELOW
+
 # The secret for the IAM Role to turn on the server is hidden in Lambda
 There is currently no way to log on to an IAM role programatically through the AWS SDK. So my options are to implement 3rd party login (e.g. with Facebook or Amazon), hard code the IAM keys in the website, or store them somewhere else behind a password.
 
