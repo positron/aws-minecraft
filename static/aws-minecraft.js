@@ -96,7 +96,7 @@ $(function() {
       ec2.modifyInstanceAttribute(
          {
             InstanceId: 'i-82a35454',
-            InstanceType: { Value: 't2.small' }
+            InstanceType: { Value: 't2.medium' }
          },
          function(err, data) {
             if (err) {
